@@ -11,23 +11,34 @@ public class ContactManager {
     }
 
     public List<Contact> searchContacts(String query) {
-        if (query == null || query.isEmpty()) {
-            return contactDAO.getAllContacts();
-        }
+        return contactDAO.getAllContacts()
+                .stream()
+                .filter(contact -> isContactMatched(contact, query))
+                .toList();
+    }
+
+    private boolean isContactMatched(Contact contact, String query) {
+        if (query == null || query.isEmpty()) return true;
         query = query.toLowerCase();
-        ArrayList<Contact> results = new ArrayList<>();
-        for (Contact contact : contactDAO.getAllContacts()) {
-            String searchString = contact.getFullName().toLowerCase()
-                    + " " + contact.getEmail().toLowerCase()
-                    + " " + contact.getPhone().toLowerCase();
-            if (searchString.contains(query)) {
-                results.add(contact);
-            }
-        }
-        return results;
+        String searchString = contact.getFullName()
+                + " " + contact.getEmail()
+                + " " + contact.getPhone();
+        return searchString.toLowerCase().contains(query);
     }
 
     public void addContact(Contact contact) {
         contactDAO.addContact(contact);
+    }
+
+    public List<Contact> getAllContacts() {
+        return contactDAO.getAllContacts();
+    }
+
+    public void updateContact(Contact contact) {
+        contactDAO.updateContact(contact);
+    }
+
+    public void deleteContact(Contact contact) {
+        contactDAO.deleteContact(contact);
     }
 }
